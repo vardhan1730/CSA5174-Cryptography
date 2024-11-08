@@ -1,0 +1,41 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+int char_to_int(char c) {
+    return c - 'a';
+}
+char int_to_char(int n) {
+    return 'a' + n;
+}
+void encrypt_pair(char a, char b, int key[2][2], char *result) {
+    int x = char_to_int(a);
+    int y = char_to_int(b);
+    int encrypted_x = (key[0][0] * x + key[0][1] * y) % 26;
+    int encrypted_y = (key[1][0] * x + key[1][1] * y) % 26;
+    result[0] = int_to_char(encrypted_x);
+    result[1] = int_to_char(encrypted_y);
+}
+int main() {
+    char plaintext[] = "meetmeattheusualplaceattenratherthaneightoclock";
+    int key[2][2] = { {9, 4}, {5, 7} };
+    char ciphertext[100] = "";
+    int length = strlen(plaintext);
+    int i;  // Declare loop variable at the start of the function
+    char encrypted_pair[3] = {0};  // Declare this variable outside of the loop
+    // Ensure even length by padding with 'x' if necessary
+    if (length % 2 != 0) {
+        plaintext[length] = 'x';
+        plaintext[length + 1] = '\0';
+        length++;
+    }
+    printf("Plaintext: %s\n", plaintext);
+    printf("Ciphertext: ");
+    // Encrypt each pair of letters
+    for (i = 0; i < length; i += 2) {
+        encrypt_pair(plaintext[i], plaintext[i+1], key, encrypted_pair);
+        strncat(ciphertext, encrypted_pair, 2);
+        printf("%s", encrypted_pair);
+    }
+    printf("\n");
+    return 0;
+}

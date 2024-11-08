@@ -1,0 +1,95 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+#define MAX_TEXT_LENGTH 1000
+#define ALPHABET_SIZE 26
+double english_freq[ALPHABET_SIZE] = {
+    0.082, 0.015, 0.028, 0.043, 0.127, 0.022, 0.020, 0.061, 0.070, 0.002, 0.008, 0.040, 0.024, 0.067, 0.075,
+    0.019, 0.001, 0.060, 0.063, 0.091, 0.028, 0.010, 0.023, 0.001, 0.020, 0.002, 0.002
+};
+int char_to_int(char c) {
+    return toupper(c) - 'A';
+}
+char int_to_char(int index) {
+    return 'A' + index;
+}
+double calculate_likelihood(char *text) {
+    int i;
+    int letter_count[ALPHABET_SIZE] = {0};
+    int total_letters = 0;
+    for (i = 0; i < strlen(text); i++) {
+        if (isalpha(text[i])) {
+            letter_count[char_to_int(text[i])]++;
+            total_letters++;
+        }
+    }
+    // Calculate likelihood based on the letter frequencies
+    double likelihood = 0.0;
+    for (i = 0; i < ALPHABET_SIZE; i++) {
+        double observed_freq = (double)letter_count[i] / total_letters;
+        likelihood += (observed_freq - english_freq[i]) * (observed_freq - english_freq[i]);
+    }
+    return likelihood;
+}
+// Function to perform the additive cipher decryption (Caesar cipher decryption)
+void decrypt_with_shift(char *ciphertext, char *plaintext, int shift) {
+    int i;
+    for (i = 0; i < strlen(ciphertext); i++) {
+        if (isalpha(ciphertext[i])) {
+            int letter = char_to_int(ciphertext[i]);
+            plaintext[i] = int_to_char((letter - shift + ALPHABET_SIZE) % ALPHABET_SIZE);
+        } else {
+            plaintext[i] = ciphertext[i]; // Keep non-alphabetic characters the same
+        }
+    }
+    plaintext[i] = '\0'; // Null-terminate the plaintext
+}
+// Function to perform the letter frequency attack
+void letter_frequency_attack(char *ciphertext, int top_n) {
+    int shift, i, j;
+    char decrypted_text[MAX_TEXT_LENGTH];
+    double likelihoods[ALPHABET_SIZE];
+    int shifts[ALPHABET_SIZE];
+    // Decrypt with all possible shifts (0 to 25) and calculate the likelihood of each shift
+    for (shift = 0; shift < ALPHABET_SIZE; shift++) {
+        decrypt_with_shift(ciphertext, decrypted_text, shift);
+        likelihoods[shift] = calculate_likelihood(decrypted_text);
+        shifts[shift] = shift;
+    }
+    // Sort the shifts based on likelihood in ascending order
+    for (i = 0; i < ALPHABET_SIZE - 1; i++) {
+        for (j = i + 1; j < ALPHABET_SIZE; j++) {
+            if (likelihoods[i] > likelihoods[j]) {
+                // Swap likelihoods
+                double temp_likelihood = likelihoods[i];
+                likelihoods[i] = likelihoods[j];
+                likelihoods[j] = temp_likelihood;
+                // Swap shifts
+                int temp_shift = shifts[i];
+                shifts[i] = shifts[j];
+                shifts[j] = temp_shift;
+            }
+        }
+    }
+    // Output the top N possible plaintexts
+    printf("\nTop %d possible plaintexts based on letter frequency analysis:\n", top_n);
+    for (i = 0; i < top_n; i++) {
+        decrypt_with_shift(ciphertext, decrypted_text, shifts[i]);
+        printf("\nShift %d: %s\n", shifts[i], decrypted_text);
+    }
+}
+int main() {
+    char ciphertext[MAX_TEXT_LENGTH];
+    int top_n;
+    // Get the ciphertext from the user
+    printf("Enter the ciphertext: ");
+    fgets(ciphertext, MAX_TEXT_LENGTH, stdin);
+    // Remove the newline character if present
+    ciphertext[strcspn(ciphertext, "\n")] = 0;
+    // Get the number of top plaintexts to display
+    printf("Enter the number of top possible plaintexts to display: ");
+    scanf("%d", &top_n);
+    // Perform the letter frequency attack
+    letter_frequency_attack(ciphertext, top_n);
+    return 0;
+}

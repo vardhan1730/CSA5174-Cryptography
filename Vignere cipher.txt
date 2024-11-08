@@ -1,0 +1,20 @@
+#include<stdio.h>
+#include<ctype.h>
+#include<string.h>
+int main(){
+char x[1000];
+char p[1000];
+int s,i;
+char ch[1000]="";
+printf("enter the plaintext");
+scanf("%s",p);
+printf("enter the key");
+scanf("%s",x);
+for(i=0;p[i]!='\0';i++){
+	
+		s=((p[i]-'A')+(x[i % strlen(x)]-'A'))%26;
+		ch[i]=s+'A';	
+	}
+ch[i]='\0';
+printf("cyber text: %s\n",ch);
+}

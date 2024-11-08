@@ -1,0 +1,23 @@
+#include<stdio.h>
+#include<ctype.h>
+int main(){
+	char c[100];
+	char s[1000];
+	char x[1000]="";
+	int y=0;
+	printf("enter the plain text key");
+	scanf("%s",c);
+	printf("enter the 1-26 alphabets :");
+	scanf("%s",s);
+	for(int i=0;c[i]!='\0';i++){
+		for(int j=0;s[j]!='\0';j++){
+			if(c[i]==j+'A'){
+				x[y]=s[j];
+				y++;
+				break;
+			}
+		}
+	}
+	x[y]='\0';
+	printf("cyber text : %s\n",x);
+}

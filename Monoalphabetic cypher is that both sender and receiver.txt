@@ -1,0 +1,84 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+#define ALPHABET_SIZE 26
+
+// Function to generate the cipher alphabet from the keyword
+void generateCipherAlphabet(const char *keyword, char *cipherAlphabet) {
+    int used[ALPHABET_SIZE] = {0};  // Array to mark used letters
+    int index = 0;
+
+    // Step 1: Add the letters of the keyword to the cipher alphabet
+    for (int i = 0; i < strlen(keyword); i++) {
+        char letter = toupper(keyword[i]);
+        if (!used[letter - 'A']) {
+            cipherAlphabet[index++] = letter;
+            used[letter - 'A'] = 1;
+        }
+    }
+
+    // Step 2: Add the remaining letters of the alphabet to the cipher alphabet
+    for (char letter = 'A'; letter <= 'Z'; letter++) {
+        if (!used[letter - 'A']) {
+            cipherAlphabet[index++] = letter;
+            used[letter - 'A'] = 1;
+        }
+    }
+}
+
+// Function to encrypt the plaintext using the cipher alphabet
+void encrypt(const char *plaintext, const char *cipherAlphabet, char *ciphertext) {
+    for (int i = 0; plaintext[i] != '\0'; i++) {
+        if (isalpha(plaintext[i])) {
+            char letter = toupper(plaintext[i]);
+            ciphertext[i] = cipherAlphabet[letter - 'A'];
+        } else {
+            ciphertext[i] = plaintext[i];  // Keep spaces and punctuation
+        }
+    }
+    ciphertext[strlen(plaintext)] = '\0';  // Null-terminate the ciphertext
+}
+
+// Function to decrypt the ciphertext using the cipher alphabet
+void decrypt(const char *ciphertext, const char *cipherAlphabet, char *plaintext) {
+    for (int i = 0; ciphertext[i] != '\0'; i++) {
+        if (isalpha(ciphertext[i])) {
+            char letter = toupper(ciphertext[i]);
+            // Find the letter in the cipher alphabet and map it back to plaintext
+            for (int j = 0; j < ALPHABET_SIZE; j++) {
+                if (cipherAlphabet[j] == letter) {
+                    plaintext[i] = 'A' + j;
+                    break;
+                }
+            }
+        } else {
+            plaintext[i] = ciphertext[i];  // Keep spaces and punctuation
+        }
+    }
+    plaintext[strlen(ciphertext)] = '\0';  // Null-terminate the plaintext
+}
+
+int main() {
+    char keyword[] = "CIPHER"; // The keyword
+    char cipherAlphabet[ALPHABET_SIZE + 1]; // 26 letters + null terminator
+    char plaintext[] = "HELLO WORLD";  // Example plaintext
+    char ciphertext[256];  // To store the encrypted message
+    char decrypted[256];   // To store the decrypted message
+
+    // Generate the cipher alphabet from the keyword
+    generateCipherAlphabet(keyword, cipherAlphabet);
+
+    // Print the generated cipher alphabet
+    printf("Generated Cipher Alphabet: %s\n", cipherAlphabet);
+
+    // Encrypt the plaintext
+    encrypt(plaintext, cipherAlphabet, ciphertext);
+    printf("Encrypted Message: %s\n", ciphertext);
+
+    // Decrypt the ciphertext
+    decrypt(ciphertext, cipherAlphabet, decrypted);
+    printf("Decrypted Message: %s\n", decrypted);
+
+    return 0;
+}

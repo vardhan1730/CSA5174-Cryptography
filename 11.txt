@@ -1,0 +1,9 @@
+#include <stdio.h>
+#include <math.h>
+int main() {
+    double approx_keys_no_identical = pow(2, 84);
+    double approx_unique_keys = pow(2, 50);
+    printf("Approximate key space ignoring identical results: 2^84\n");
+    printf("Approximate effective unique keys considering identical results: 2^50\n");
+    return 0;
+}

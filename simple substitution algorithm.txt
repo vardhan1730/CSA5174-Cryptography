@@ -1,0 +1,65 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+#define ALPHABET_SIZE 26
+// Function to count the frequency of characters in a string
+void countFrequency(char *text, int freq[]) {
+    for (int i = 0; text[i] != '\0'; i++) {
+        if (isalpha(text[i])) {
+            char c = toupper(text[i]);
+            freq[c - 'A']++;
+        }
+    }
+}
+// Function to print the letter frequency distribution
+void printFrequency(int freq[]) {
+    printf("Letter Frequency:\n");
+    for (int i = 0; i < ALPHABET_SIZE; i++) {
+        if (freq[i] > 0) {
+            printf("%c: %d\n", 'A' + i, freq[i]);
+        }
+    }
+}
+// Function to replace characters in the ciphertext based on the substitution map
+void substitute(char *ciphertext, char *plaintext, char *substitution) {
+    for (int i = 0; ciphertext[i] != '\0'; i++) {
+        if (isalpha(ciphertext[i])) {
+            char c = toupper(ciphertext[i]);
+            plaintext[i] = substitution[c - 'A'];
+        } else {
+            plaintext[i] = ciphertext[i];
+        }
+    }
+    plaintext[strlen(ciphertext)] = '\0'; // Null-terminate the plaintext
+}
+int main() {
+    char ciphertext[] = "DZI XLFY YI MXY WXVH DZI XLFY"; // Example ciphertext
+    char plaintext[256]; // To store decrypted message
+    int freq[ALPHABET_SIZE] = {0}; // Frequency of each letter
+    char substitution[ALPHABET_SIZE]; // Substitution array, no initial string assignment
+    // Initialize the substitution array to correspond to the alphabet (A -> A, B -> B, etc.)
+    for (int i = 0; i < ALPHABET_SIZE; i++) {
+        substitution[i] = 'A' + i; // A to Z
+    }
+    // Step 1: Count the frequency of letters in the ciphertext
+    countFrequency(ciphertext, freq);
+    
+    // Step 2: Print the frequency distribution
+    printFrequency(freq);
+    // Step 3: Make initial guesses based on frequency analysis and common words
+    // Assume the most frequent letter corresponds to 'E' (as per frequency analysis)
+    // For example, let's say 'D' -> 'E', 'Z' -> 'T', 'I' -> 'H' based on our guesswork
+    // Update the substitution map based on these assumptions
+    substitution['D' - 'A'] = 'E';
+    substitution['Z' - 'A'] = 'T';
+    substitution['I' - 'A'] = 'H';
+    // Step 4: Use known word patterns ('the') and try to substitute
+    substitution['X' - 'A'] = 'O'; // Based on "the" and word patterns
+    substitution['L' - 'A'] = 'F'; // "the" assumption
+    substitution['F' - 'A'] = 'R'; // "the" assumption
+    // Step 5: Substitute based on the current mapping
+    substitute(ciphertext, plaintext, substitution);
+    // Step 6: Print the decrypted message
+    printf("\nDecrypted Message:\n%s\n", plaintext);
+    return 0;
+}

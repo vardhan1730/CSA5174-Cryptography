@@ -1,0 +1,48 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+int char_to_int(char c) {
+    return toupper(c) - 'A';
+}
+char int_to_char(int n) {
+    return 'A' + n;
+}
+void multiply_matrix(int key[2][2], int vector[2], int result[2]) {
+    result[0] = (key[0][0] * vector[0] + key[0][1] * vector[1]) % 26;
+    result[1] = (key[1][0] * vector[0] + key[1][1] * vector[1]) % 26;
+}
+void hill_cipher_encrypt(char *plaintext, char *ciphertext, int key[2][2]) {
+    int i, vector[2], encrypted_vector[2];
+    int length = strlen(plaintext);
+    if (length % 2 != 0) {
+        plaintext[length] = 'X';
+        plaintext[length + 1] = '\0';
+        length++;
+    }
+    for (i = 0; i < length; i += 2) {
+        vector[0] = char_to_int(plaintext[i]);
+        vector[1] = char_to_int(plaintext[i + 1]);
+        // Encrypt the vector using the key matrix
+        multiply_matrix(key, vector, encrypted_vector);
+        // Convert encrypted vector back to characters
+        ciphertext[i] = int_to_char(encrypted_vector[0]);
+        ciphertext[i + 1] = int_to_char(encrypted_vector[1]);
+    }
+    ciphertext[length] = '\0'; // Null-terminate the ciphertext
+}
+int main() {
+    char plaintext[] = "DEEPIKAKARNAM";     // Example plaintext
+    char ciphertext[100];                // Store the ciphertext
+    int key[2][2] = { {9, 4}, {5, 7} };  // Example key matrix
+    int i, length;
+    // Print the original plaintext
+    printf("Plaintext: %s\n", plaintext);
+    // Encrypt the plaintext using the Hill cipher
+    hill_cipher_encrypt(plaintext, ciphertext, key);
+    // Print the resulting ciphertext
+    printf("Ciphertext: %s\n", ciphertext);
+    // Known-plaintext attack (illustrative)
+    printf("\nNote: With enough plaintext-ciphertext pairs, it is possible to determine the key matrix.\n");
+    printf("An attacker with both plaintext and corresponding ciphertext pairs could reverse engineer the key.\n");
+    return 0;
+}

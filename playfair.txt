@@ -1,0 +1,34 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+#define SIZE 5
+// Function to create the Playfair matrix
+void createPlayfairMatrix(char key[], char matrix[SIZE][SIZE]) {
+    int i, j, k = 0;
+    int used[26] = {0};  // To keep track of used letters in the matrix
+    // Fill the matrix with key characters first
+    for (i = 0; key[i] != '\0'; i++) {
+        char ch = toupper(key[i]);
+        if (ch == 'J') ch = 'I';  // Merge 'J' and 'I' for 5x5 matrix
+        if (!used[ch - 'A']) {
+            matrix[k / SIZE][k % SIZE] = ch;
+            used[ch - 'A'] = 1;
+            k++;
+        }
+    }
+    // Fill remaining positions in the matrix with other letters
+    for (i = 0; i < 26; i++) {
+        if (!used[i] && (i + 'A') != 'J') {  // Skip 'J'
+            matrix[k / SIZE][k % SIZE] = i + 'A';
+            k++;
+        }
+    }
+}
+// Function to find the position of a character in the Playfair matrix
+void findPosition(char ch, char matrix[SIZE][SIZE], int *row, int *col) {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            if (matrix[i][j] == ch) {
+                *row = i;
+                *col = j;
+                return;

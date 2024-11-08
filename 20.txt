@@ -1,0 +1,51 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+void encrypt_ecb(unsigned char *plaintext, int plaintext_len, unsigned char *key, unsigned char *ciphertext) {
+    // Implement ECB encryption logic here
+}
+
+void decrypt_ecb(unsigned char *ciphertext, int ciphertext_len, unsigned char *key, unsigned char *plaintext) {
+    // Implement ECB decryption logic here
+}
+
+void encrypt_cbc(unsigned char *plaintext, int plaintext_len, unsigned char *key, unsigned char *iv, unsigned char *ciphertext) {
+    // Implement CBC encryption logic here
+}
+
+void decrypt_cbc(unsigned char *ciphertext, int ciphertext_len, unsigned char *key, unsigned char *iv, unsigned char *plaintext) {
+    // Implement CBC decryption logic here
+}
+
+int main() {
+    // Example usage:
+    unsigned char plaintext[16] = "Hello, world!";
+    unsigned char key[16] = "secretkey1234";
+    unsigned char iv[16] = "initialization";
+    unsigned char ciphertext[16];
+
+    // Encrypt and decrypt using ECB
+    encrypt_ecb(plaintext, 16, key, ciphertext);
+    decrypt_ecb(ciphertext, 16, key, plaintext);
+
+    // Introduce an error in the ciphertext
+    ciphertext[5] ^= 1; // Flip one bit
+
+    // Decrypt the corrupted ciphertext
+    decrypt_ecb(ciphertext, 16, key, plaintext);
+    printf("ECB decryption with error: %s\n", plaintext);
+
+    // Encrypt and decrypt using CBC
+    encrypt_cbc(plaintext, 16, key, iv, ciphertext);
+    decrypt_cbc(ciphertext, 16, key, iv, plaintext);
+
+    // Introduce an error in the ciphertext
+    ciphertext[5] ^= 1; // Flip one bit
+
+    // Decrypt the corrupted ciphertext
+    decrypt_cbc(ciphertext, 16, key, iv, plaintext);
+    printf("CBC decryption with error: %s\n", plaintext);
+
+    return 0;
+}
